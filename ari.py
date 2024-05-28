@@ -90,7 +90,7 @@ def ari():      #function to calculate automated readability index.
         print("Will be suitable for age group 17-18 (TWELFTH STANDARD STUDENTS)")
     
     elif(14 <= Automated_Readability_Index < 15 ):
-        print("Will be suitable for age group 18-22 (FOURTH STANDARD STUDENTS)")
+        print("Will be suitable for age group 18-22 (COLLEGE STUDENTS)")
     
     else:
         print("This book is hard to make out.")
