@@ -1,4 +1,5 @@
 import random
+
 def random_word():
     with open('hangman_words.txt', 'r') as wordfile:
         random_word = random.choice(wordfile.readlines()).strip()
@@ -7,7 +8,7 @@ def random_word():
 def print_statements():
     print("Lets play an interesting game............")
     print("I have a secret word for you.....")
-    print("Can you guess the word????")
+    print("Can you guess the ecret_word,blanks,chances,choiceword????")
     answer=input("Y/N????")
     if(answer.lower()=="y"):
         print("You have only 7 chances..........")
@@ -26,10 +27,10 @@ def masking(secret_word):
     for letter in range(len(secret_word)):
         blanks=blanks+"-"
     print("Guess this",len(secret_word),"letter secret word :",blanks)
-    # print(secret_word)
+    print(secret_word)
     return blanks,secret_word
 
-def guess_letter():
+def guess_letter(secret_word):
     secret_word=random_word()
     blanks, secret_word = masking(secret_word)
     chances = 7
@@ -55,6 +56,7 @@ def guess_letter():
             print(f"You have {chances} chances left.")
     
     result(blanks)
+    return blanks
 
 def checking_duplications(choice,choice_check):
     if choice in choice_check:
@@ -63,6 +65,8 @@ def checking_duplications(choice,choice_check):
     else:
         choice_check.append(choice)
         return True
+
+
 
 
 def unmasking(secret_word,choice,blanks):
@@ -95,4 +99,5 @@ def death(chances):
 
 if __name__ == '__main__':
     print_statements()
-    guess_letter() 
+    secret_word=random_word()
+    guess_letter(secret_word)
