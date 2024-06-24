@@ -1,16 +1,14 @@
 import random
-
 def random_word():
-    wordfile=open('hangman_words.txt','r')        #opening the text file in read mode.
-    random_word=random.choice((wordfile.readlines())).strip()   #picking random word from the text file and removing the starting and trailing \n.
-    return random_word    #returning the output for further use.
-
-
+    with open('hangman_words.txt', 'r') as wordfile:
+        random_word = random.choice(wordfile.readlines()).strip()
+    return random_word
+    
 def print_statements():
     print("Lets play an interesting game............")
     print("I have a secret word for you.....")
     print("Can you guess the word????")
-    answer=input("Y/N????")   
+    answer=input("Y/N????")
     if(answer.lower()=="y"):
         print("You have only 7 chances..........")
         print("Are you ready?")
@@ -23,58 +21,67 @@ def print_statements():
     else:
         print("Oops..")
         exit()
-    
-
-
-
-def play():
-    secret_word=random_word()
-    # print(secret_word)
+def masking(secret_word):
     blanks=""
-    for i in range(len(secret_word)):       #printing the blank lines to be replaced.Its number is set proportional to the length of secret word.
+    for letter in range(len(secret_word)):
         blanks=blanks+"-"
     print("Guess this",len(secret_word),"letter secret word :",blanks)
+    # print(secret_word)
+    return blanks,secret_word
 
+def guess_letter():
+    secret_word=random_word()
+    blanks, secret_word = masking(secret_word)
+    chances = 7
+    choice_check = []
     
-    chances=7
-    choice_check=[]   #creating an empty list to add the guessed choices.
-    while chances>0 and '-' in blanks:   #setting the number of chances for the user.
-        choice=input("Enter your guess : ").lower()
+    while chances > 0 and '-' in blanks:
+        choice = input("Enter your guess : ").lower()
         
-        if choice in choice_check:
-            print("You already quessed",{ choice },"Try a new one instead..")
-            print("You have",chances,"chances left")
+        # Check if the input is a single alphabetic character
+        if not choice.isalpha() or len(choice) != 1:
+            print("Enter a valid single alphabet")
+            continue
+        
+        if not checking_duplications(choice, choice_check):
+            continue
+        
+        if choice in secret_word:
+            blanks = unmasking(secret_word, choice, blanks)
+            print(blanks)
         else:
-            choice_check.append(choice)
-        
-            if(len(choice)!=1 or not choice.isalpha()):    #to display a message if the entered choice is invalid.
-                print("Enter a valid single alphabet.")
-            else:
-                match=False      #predefining the variable as False.
-                for index in range(len(secret_word)):  #iterating through the length of secret word.
-                    if(secret_word[index] == choice):   #checking if the guessed alphabel is present in the secret word.
-                        blanks=blanks[:index] + choice + blanks[index + 1:]   #replacing the guessed alphabel in the exact index position.
-                        match=True
-                
-            if not match:
-                chances -= 1   #decrementing the number of chances if the choice is wrong.
-                death(chances)   #calling the death() function.
-            print(blanks)    #printing the current output.
-            
-            print("You have",chances,"chances left.")
-
+            chances -= 1
+            death(chances)
+            print(f"You have {chances} chances left.")
     
-    if '-' not in blanks:     #checks whether all the blank spaces are filled.
-        print("Congratulations...! You guessed the word correctly.")    
-    else:
-        print("Oops..You ran out of chances.The secret word was",{ secret_word })
-        
-            
-        
-   
+    result(blanks)
 
-def death(chances):          
-    deathh={                             #dictionary having key as the number of chances and the corresponding value will be its print statement.ie,the image to be printed.
+def checking_duplications(choice,choice_check):
+    if choice in choice_check:
+        print("You have already guessed",{choice},"Try a new alphabet.")
+        return False
+    else:
+        choice_check.append(choice)
+        return True
+
+
+def unmasking(secret_word,choice,blanks):
+    new_blanks=list(blanks)
+    for index in range(len(secret_word)):
+        if(secret_word[index] == choice):
+            new_blanks[index]=choice
+    return "".join(new_blanks)
+
+
+def result(blanks):
+    if "-" not in blanks:
+        print("Congratulations..You guessed the word correctly")
+    else:
+        print("Ooops..You ran out of chances")
+
+
+def death(chances):
+    deathh={
     6:"|_______\n|  |\n|\n|\n|\n|\n|_",
     5:"|_______\n|  |\n|  0\n|\n|\n|\n|_",
     4:"|_______\n|  |\n|  0\n| / \n|\n|\n|_",
@@ -82,17 +89,10 @@ def death(chances):
     2:"|_______\n|  |\n|  0\n| /|\\ \n|\n|\n|_",
     1:"|_______\n|  |\n|  0\n| /|\\ \n| /\n|\n|_",
     0:"|_______\n|  |\n|  0\n| /|\\ \n| / \\\n|\n|_"
-    }         
-    
+    }
     print(deathh[chances])
-
-            
-
-            
 
 
 if __name__ == '__main__':
     print_statements()
-    play()
-
-
+    guess_letter() 
